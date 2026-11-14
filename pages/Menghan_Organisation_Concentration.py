@@ -21,10 +21,6 @@ import streamlit as st
 import plotly.express as px
 from pathlib import Path
 
-
-# Page setup
-st.set_page_config(page_title="AI Model Concentration", page_icon="🤖", layout="wide")
-
 # Project paths
 BASE_DIR = Path(__file__).resolve().parents[1]
 PROCESSED_DIR = BASE_DIR / "Data" / "processed"
