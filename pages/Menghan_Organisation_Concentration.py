@@ -26,14 +26,18 @@ from pathlib import Path
 st.set_page_config(page_title="AI Model Concentration", page_icon="🤖", layout="wide")
 
 # Project paths
-ROOT_DIR = Path(__file__).resolve().parent
-DATA_DIR = ROOT_DIR / "Data" / "processed"
+from pathlib import Path
 
-STANFORD_TOTAL_FILE = (DATA_DIR / "stanford_notable_2014_2024.csv")
-STANFORD_2024_FILE = (DATA_DIR / "stanford_notable_2024.csv")
+BASE_DIR = Path(__file__).resolve().parents[1]
+PROCESSED_DIR = BASE_DIR / "Data" / "processed"
 
-FRONTIER_CONCENTRATION_FILE = (DATA_DIR / "frontier_concentration_by_year.csv")
-FRONTIER_YEAR_ORG_FILE = (DATA_DIR / "frontier_by_year_org.csv")
+STANFORD_TOTAL_FILE = (PROCESSED_DIR / "stanford_notable_2014_2024.csv")
+
+STANFORD_2024_FILE = (PROCESSED_DIR / "stanford_notable_2024.csv")
+
+CONCENTRATION_FILE = (PROCESSED_DIR / "frontier_concentration_by_year.csv")
+
+FRONTIER_YEAR_ORG_FILE = (PROCESSED_DIR / "frontier_by_year_org.csv")
 
 # Load processed data
 @st.cache_data
