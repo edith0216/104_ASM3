@@ -265,21 +265,21 @@ composition_grouped["Share_percent"] = (composition_grouped["Share_percent"].fil
 # 100% stacked bar chart
 fig5 = px.bar(
     composition_grouped,
-    x="Year", y="Share_percent", color="Display_org",
+    x="Year",
+    y="Share_percent",
+    color="Display_org",
+    text="Share_percent",
     labels={
         "Year": "Year",
         "Share_percent": "Share of frontier development (%)",
-        "Display_org": "Organisation"})
+        "Display_org": "Organisation"
+    }
+)
 
-fig5.update_layout(
-    height=430, margin=dict(l=10, r=20, t=20, b=20),
-    xaxis_title="Year",
-    yaxis_title="Share of frontier development (%)",
-    legend_title="Organisation",
-    barmode="stack")
-
-fig5.update_yaxes(range=[0, 100])
-st.plotly_chart(fig5, use_container_width=True)
+fig5.update_traces(
+    texttemplate="%{text:.0f}%",
+    textposition="inside"
+)
 
 st.markdown("""
     **Interpretation:** Frontier development is shared across several organisations, 
