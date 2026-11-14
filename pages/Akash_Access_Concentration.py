@@ -4,7 +4,11 @@ import streamlit as st
 
 st.set_page_config(page_title="Open or behind closed doors?", layout="wide")
 
-DATA_PATH = "notable_ai_models.csv"
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parents[1]
+DATA_PATH = BASE_DIR / "Data" / "raw" / "notable_ai_models.csv"
+
 ACCESS_ORDER = ["Open weights", "Closed (API / hosted)", "Unreleased"]
 ACCESS_COLOURS = ["#2da44e", "#d1242f", "#9aa0a6"]
 START, END = 2019, 2024  # before 2019 most rows have no accessibility label
