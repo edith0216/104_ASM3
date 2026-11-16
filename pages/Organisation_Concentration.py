@@ -20,10 +20,23 @@ import pandas as pd
 import streamlit as st
 import plotly.express as px
 from data import PROCESSED_DIR, load_csv
-from page_style import analysis_header
+from page_style import (
+    analysis_header,
+    interpretation,
+    limitations,
+    page_footer,
+    page_takeaway,
+)
 
-analysis_header("Organisation Concentration", "Menghan",
-                "Do a small number of organisations account for a large share of influential AI models?")
+analysis_header(
+    title="Organisation Concentration",
+    contributor="Menghan",
+    focus="Do a small number of organisations account for a large share of influential AI models?",
+    description=(
+        "This page examines long-term organisation concentration using Stanford AI Index "
+        "and Epoch AI frontier model data."
+    ),
+)
 
 STANFORD_TOTAL_FILE = (PROCESSED_DIR / "stanford_notable_2014_2024.csv")
 
@@ -97,9 +110,9 @@ fig1.update_layout(
 
 st.plotly_chart(fig1, use_container_width=True)
 
-st.markdown("""
-    **Interpretation**: A small number of organisations produced most notable AI models over 2014-2024.
-    """)
+interpretation(
+    "A small number of organisations produced most notable AI models over 2014–2024."
+)
 st.divider()
 
 
@@ -128,9 +141,9 @@ fig2.update_layout(
 
 st.plotly_chart(fig2, use_container_width=True)
 
-st.markdown("""
-    **Interpretation:** In 2024, leadership was more competitive, with several organisations producing multiple notable models.
-    """)
+interpretation(
+    "In 2024, leadership was more competitive, with several organisations producing multiple notable models."
+)
 st.divider()
 
 
@@ -166,9 +179,9 @@ fig3.update_layout(
 
 st.plotly_chart(fig3, use_container_width=True)
 
-st.markdown("""
-    **Interpretation:** The number of organisations at the frontier changes a lot from year to year, 
-    rather than steadily falling. """)
+interpretation(
+    "The number of organisations at the frontier changes a lot from year to year rather than steadily falling."
+)
 st.divider()
 
 
@@ -198,9 +211,9 @@ fig4.update_xaxes(dtick=1)
 
 st.plotly_chart(fig4, use_container_width=True)
 
-st.markdown('''
-    **Interpretation:** : When more than three organisations participate, 
-    the top three still hold a large share of frontier development. ''')
+interpretation(
+    "When more than three organisations participate, the top three still hold a large share of frontier development."
+)
 st.divider()
 
 
@@ -277,23 +290,29 @@ fig5.update_traces(
     textposition="inside"
 )
 
-st.markdown("""
-    **Interpretation:** Frontier development is shared across several organisations, 
-    but a few leading organisations often make up most of the total. """)
+fig5.update_layout(
+    height=430,
+    margin=dict(l=10, r=20, t=20, b=20),
+    xaxis_title="Year",
+    yaxis_title="Share of frontier development (%)",
+    legend_title="Organisation",
+    barmode="stack",
+)
+fig5.update_yaxes(range=[0, 100])
+st.plotly_chart(fig5, use_container_width=True)
+
+interpretation(
+    "The leading organisations change over time, but a few organisations often still make up a large share of frontier development."
+)
 st.divider()
 
 
-# Overall answer
-st.subheader("What does the data suggest?")
-st.markdown("""
-    Influential AI model development remains concentrated among a small group
-    of organisations, but concentration does not increase steadily over time.
-
-    Instead:
-    - the number of frontier organisations fluctuates substantially;
-    - some years are highly concentrated because only a few
-      organisations are represented. """)
-
+# Page takeaway
+page_takeaway(
+    "Organisation concentration changes from year to year rather than steadily increasing. "
+    "However, a relatively small number of leading organisations often still account for a large "
+    "share of frontier model development."
+)
 
 # Methodology
 with st.expander("Data and methodology"):
@@ -318,5 +337,10 @@ with st.expander("Data and methodology"):
         """)
 
 
-# Sources
-st.caption("Sources: Epoch AI Frontier Models dataset & Stanford AI Index Report 2025.")
+limitations([
+    "Stanford notable models and Epoch frontier models are related but different measures.",
+    "Model counts do not directly measure capability, market power or revenue.",
+    "Fractional attribution gives equal credit to listed organisations and does not measure their actual contribution.",
+])
+
+page_footer("Epoch AI Frontier Models and Stanford AI Index 2025")

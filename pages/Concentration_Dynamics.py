@@ -15,12 +15,25 @@ from concentration import (credit_table, entrants_by_year,
                            split_field_by_year)
 
 from data import RAW_DIR, load_csv
-from page_style import analysis_header
+from page_style import (
+    analysis_header,
+    interpretation,
+    limitations,
+    page_footer,
+    page_takeaway,
+)
 BLUE, ORANGE, AQUA = "#2a78d6", "#eb6834", "#1baf7a"   # validated categorical slots 1-3
 INK, MUTED, GRID = "#0b0b0b", "#52514e", "#e6e5e1"
 
-analysis_header("Concentration Dynamics", "Aarushi",
-                "How does organisational concentration change over time, and how sensitive is it to counting choices?")
+analysis_header(
+    title="Concentration Dynamics",
+    contributor="Aarushi",
+    focus="How does organisational concentration change over time, and how sensitive is it to counting choices?",
+    description=(
+        "This page tests how conclusions about concentration change with the model set, "
+        "Top-N choice, time window, and parent-company roll-up."
+    ),
+)
 
 
 # ---------- data ----------------------------------------------------------
@@ -112,10 +125,10 @@ end_label(f2, last["year"], last["distinct_orgs"], "shipping")
 end_label(f2, last["year"], last["effective_orgs"], "effective")
 st.plotly_chart(f2, width="stretch")
 
-st.markdown(
-    "**Two readings, same data.** If the top-N line rises, a few labs are taking more of the frontier. "
-    "If the organisation count rises at the same time, the field is also *broadening* at the edge. "
-    "Flip the roll-up toggle: whether Google's labs count as one organisation moves the answer.")
+interpretation(
+    "A rising Top-N share suggests stronger concentration, while a rising organisation count suggests broader "
+    "participation. Both can happen at the same time, and parent-company roll-up choices can change the result."
+)
 
 # ---------- deeper views --------------------------------------------------
 st.divider()
@@ -252,3 +265,17 @@ with st.expander("Method notes and choices that change the answer"):
 - **HHI** on a 0 to 10,000 scale (the competition-policy convention). Latest: {last['hhi']:,.0f}.
 - Models with no publication date or organisation are excluded.
 """)
+
+
+page_takeaway(
+    "Concentration depends on both the time period and the counting choices. The latest frontier can appear highly "
+    "concentrated even when the wider field is broadening."
+)
+
+limitations([
+    "Results change depending on whether sub-labs are rolled up to parent companies.",
+    "Short rolling windows can be noisy because frontier model releases are relatively rare.",
+    "Different concentration measures capture different aspects of the same distribution.",
+])
+
+page_footer("Epoch AI Frontier Models and Epoch AI Notable Models")
