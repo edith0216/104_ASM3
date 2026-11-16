@@ -19,6 +19,7 @@ Visual structure:
 import pandas as pd
 import streamlit as st
 import plotly.express as px
+
 from data import PROCESSED_DIR, load_csv
 from page_style import (
     CVD_BLUE,
@@ -29,348 +30,873 @@ from page_style import (
     page_takeaway,
 )
 
+
+# --------------------------------------------------
+# Page header
+# --------------------------------------------------
+
 analysis_header(
     "Organisation Concentration",
     "Menghan",
-    "Do a small number of organisations account for a large share of influential AI models?",
-    "This page examines long-term organisation concentration using Stanford AI Index and Epoch AI frontier-model data.",
+    (
+        "Do a small number of organisations account for "
+        "a large share of influential AI models?"
+    ),
+    (
+        "This page examines long-term organisation concentration "
+        "using Stanford AI Index and Epoch AI frontier-model data."
+    ),
 )
 
-STANFORD_TOTAL_FILE = (PROCESSED_DIR / "stanford_notable_2014_2024.csv")
 
-STANFORD_2024_FILE = (PROCESSED_DIR / "stanford_notable_2024.csv")
+# --------------------------------------------------
+# Data paths
+# --------------------------------------------------
 
-FRONTIER_CONCENTRATION_FILE = (PROCESSED_DIR / "frontier_concentration_by_year.csv")
+STANFORD_TOTAL_FILE = (
+    PROCESSED_DIR / "stanford_notable_2014_2024.csv"
+)
 
-FRONTIER_YEAR_ORG_FILE = (PROCESSED_DIR / "frontier_by_year_org.csv")
+STANFORD_2024_FILE = (
+    PROCESSED_DIR / "stanford_notable_2024.csv"
+)
 
+FRONTIER_CONCENTRATION_FILE = (
+    PROCESSED_DIR / "frontier_concentration_by_year.csv"
+)
+
+FRONTIER_YEAR_ORG_FILE = (
+    PROCESSED_DIR / "frontier_by_year_org.csv"
+)
+
+
+# --------------------------------------------------
 # Load processed data
+# --------------------------------------------------
+
 @st.cache_data
 def load_data():
-    stanford_total = load_csv(STANFORD_TOTAL_FILE)
-    stanford_2024 = load_csv(STANFORD_2024_FILE)
-    concentration = load_csv(FRONTIER_CONCENTRATION_FILE)
-    frontier_year_org = load_csv(FRONTIER_YEAR_ORG_FILE)
+
+    stanford_total = load_csv(
+        STANFORD_TOTAL_FILE
+    )
+
+    stanford_2024 = load_csv(
+        STANFORD_2024_FILE
+    )
+
+    concentration = load_csv(
+        FRONTIER_CONCENTRATION_FILE
+    )
+
+    frontier_year_org = load_csv(
+        FRONTIER_YEAR_ORG_FILE
+    )
 
     return (
         stanford_total,
         stanford_2024,
         concentration,
-        frontier_year_org)
-
-(stanford_total, stanford_2024, concentration, frontier_year_org) = load_data()
-
+        frontier_year_org,
+    )
 
 
+(
+    stanford_total,
+    stanford_2024,
+    concentration,
+    frontier_year_org,
+) = load_data()
 
+
+# --------------------------------------------------
 # Key metrics
-latest_year = int(concentration["Year"].max())
-latest = concentration[concentration["Year"] == latest_year].iloc[0]
+# --------------------------------------------------
+
+latest_year = int(
+    concentration["Year"].max()
+)
+
+latest = concentration[
+    concentration["Year"] == latest_year
+].iloc[0]
+
+
 col1, col2, col3 = st.columns(3)
 
+
 with col1:
-    st.metric(f"Frontier organisations in {latest_year}", int(latest["Organisation_count"]))
+
+    st.metric(
+        f"Frontier organisations in {latest_year}",
+        int(latest["Organisation_count"]),
+    )
+
 
 with col2:
-    st.metric(f"Top-3 share in {latest_year}", f'{latest["CR3_percent"]:.1f}%')
+
+    st.metric(
+        f"Top-3 share in {latest_year}",
+        f'{latest["CR3_percent"]:.1f}%',
+    )
+
 
 with col3:
+
     st.metric(
         f"Frontier models in {latest_year}",
-        int(latest["Frontier_model_count"]))
+        int(latest["Frontier_model_count"]),
+    )
+
 
 st.divider()
 
 
-# Chart 1 - Long-term notable model leaders
-st.subheader("1. Who dominated notable AI model development over the past decade?")
+# --------------------------------------------------
+# Chart 1
+# Long-term notable model leaders
+# --------------------------------------------------
 
-st.caption("Number of notable AI models by organisation, 2014-2024.")
+st.subheader(
+    "1. Who dominated notable AI model development over the past decade?"
+)
 
-long_term = (stanford_total
-             .sort_values("Notable_model_count_2014_2024", ascending=True))
+st.caption(
+    "Number of notable AI models by organisation, 2014–2024."
+)
 
-fig1 = px.bar(long_term,
-              x="Notable_model_count_2014_2024",
-              y="Organisation",
-              orientation="h",
-              text="Notable_model_count_2014_2024",
-              labels={
-                  "Notable_model_count_2014_2024": "Number of notable AI models",
-                  "Organisation": "Organisation"})
 
-fig1.update_traces(textposition="outside", cliponaxis=False, marker_color=CVD_BLUE)
+long_term = (
+    stanford_total
+    .sort_values(
+        "Notable_model_count_2014_2024",
+        ascending=True,
+    )
+)
+
+
+fig1 = px.bar(
+    long_term,
+    x="Notable_model_count_2014_2024",
+    y="Organisation",
+    orientation="h",
+    text="Notable_model_count_2014_2024",
+    labels={
+        "Notable_model_count_2014_2024":
+            "Number of notable AI models",
+        "Organisation":
+            "Organisation",
+    },
+)
+
+
+fig1.update_traces(
+    textposition="outside",
+    cliponaxis=False,
+    marker_color=CVD_BLUE,
+)
+
 
 fig1.update_layout(
-    height=430, showlegend=False,
-    margin=dict(l=10, r=60, t=20, b=20),
-    xaxis_title="Number of notable AI models", yaxis_title="")
+    height=430,
+    showlegend=False,
+    margin=dict(
+        l=10,
+        r=60,
+        t=20,
+        b=20,
+    ),
+    xaxis_title="Number of notable AI models",
+    yaxis_title="",
+)
 
-st.plotly_chart(fig1, use_container_width=True)
 
-st.markdown("""
-    **Interpretation**: A small number of organisations produced most notable AI models over 2014-2024.
-    """)
+st.plotly_chart(
+    fig1,
+    use_container_width=True,
+)
+
+
+interpretation(
+    "A small number of organisations produced most notable AI models "
+    "over 2014–2024."
+)
+
+
 st.divider()
 
 
-# Chart 2 - 2024 notable model leaders
-st.subheader("2. Is current leadership the same?")
-st.caption("Number of notable AI models by organisation in 2024.")
+# --------------------------------------------------
+# Chart 2
+# 2024 notable model leaders
+# --------------------------------------------------
 
-recent = (stanford_2024
-          .sort_values( "Notable_model_count_2024", ascending=True))
+st.subheader(
+    "2. Is current leadership the same?"
+)
 
-fig2 = px.bar(recent,
-              x="Notable_model_count_2024",
-              y="Organisation",
-              orientation="h",
-              text="Notable_model_count_2024",
-              labels={
-                  "Notable_model_count_2024": "Number of notable AI models",
-                  "Organisation": "Organisation"})
+st.caption(
+    "Number of notable AI models by organisation in 2024."
+)
 
-fig2.update_traces(textposition="outside", cliponaxis=False, marker_color=CVD_BLUE)
+
+recent = (
+    stanford_2024
+    .sort_values(
+        "Notable_model_count_2024",
+        ascending=True,
+    )
+)
+
+
+fig2 = px.bar(
+    recent,
+    x="Notable_model_count_2024",
+    y="Organisation",
+    orientation="h",
+    text="Notable_model_count_2024",
+    labels={
+        "Notable_model_count_2024":
+            "Number of notable AI models",
+        "Organisation":
+            "Organisation",
+    },
+)
+
+
+fig2.update_traces(
+    textposition="outside",
+    cliponaxis=False,
+    marker_color=CVD_BLUE,
+)
+
 
 fig2.update_layout(
-    height=430, showlegend=False,
-    margin=dict(l=10, r=50, t=20, b=20),
-    xaxis_title="Number of notable AI models", yaxis_title="")
+    height=430,
+    showlegend=False,
+    margin=dict(
+        l=10,
+        r=50,
+        t=20,
+        b=20,
+    ),
+    xaxis_title="Number of notable AI models",
+    yaxis_title="",
+)
 
-st.plotly_chart(fig2, use_container_width=True)
 
-st.markdown("""
-    **Interpretation:** In 2024, leadership was more competitive, with several organisations producing multiple notable models.
-    """)
+st.plotly_chart(
+    fig2,
+    use_container_width=True,
+)
+
+
+interpretation(
+    "In 2024, leadership was more competitive, with several organisations "
+    "producing multiple notable models."
+)
+
+
 st.divider()
 
 
+# --------------------------------------------------
 # Frontier year filter
-st.subheader("3. Are fewer organisations participating at the frontier?")
+# --------------------------------------------------
 
-year_min = int(concentration["Year"].min())
-year_max = int(concentration["Year"].max())
+st.subheader(
+    "3. Are fewer organisations participating at the frontier?"
+)
+
+
+year_min = int(
+    concentration["Year"].min()
+)
+
+year_max = int(
+    concentration["Year"].max()
+)
+
 
 selected_years = st.slider(
-    "Select year range", min_value=year_min,
-    max_value=year_max, value=(year_min, year_max))
+    "Select year range",
+    min_value=year_min,
+    max_value=year_max,
+    value=(
+        year_min,
+        year_max,
+    ),
+)
+
 
 filtered_concentration = concentration[
     concentration["Year"].between(
-        selected_years[0], selected_years[1])].copy()
+        selected_years[0],
+        selected_years[1],
+    )
+].copy()
+
 
 if filtered_concentration.empty:
-    st.info("No concentration data are available for the selected year range.")
+
+    st.info(
+        "No concentration data are available "
+        "for the selected year range."
+    )
+
     st.stop()
 
 
-# Chart 3 - Organisation count over time
+# --------------------------------------------------
+# Chart 3
+# Organisation count over time
+# --------------------------------------------------
+
 fig3 = px.line(
     filtered_concentration,
-    x="Year", y="Organisation_count",
-    markers=True, text="Organisation_count",
+    x="Year",
+    y="Organisation_count",
+    markers=True,
+    text="Organisation_count",
     labels={
-        "Year": "Year",
-        "Organisation_count": "Number of organisations"})
-
-fig3.update_traces(textposition="top center", line_color=CVD_BLUE, marker_color=CVD_BLUE)
-
-fig3.update_layout(
-    height=360, margin=dict(l=10, r=20, t=20, b=20),
-    xaxis_title="Year", yaxis_title="Number of organisations")
-
-st.plotly_chart(fig3, use_container_width=True)
-
-st.markdown("""
-    **Interpretation:** The number of organisations at the frontier changes a lot from year to year, 
-    rather than steadily falling. """)
-st.divider()
+        "Year":
+            "Year",
+        "Organisation_count":
+            "Number of organisations",
+    },
+)
 
 
-# Chart 4 - CR3 over time
-st.subheader("4. How concentrated is frontier development when participation is broad?")
-
-# Keep only years with more than 3 participating organisations
-cr3_meaningful = filtered_concentration[filtered_concentration["Organisation_count"] > 3].copy()
-
-fig4 = px.line(
-    cr3_meaningful, x="Year", y="CR3_percent",
-    markers=True, text="CR3_percent",
-    labels={
-        "Year": "Year",
-        "CR3_percent": "Top-3 share (%)"})
-
-fig4.update_traces(
-    texttemplate="%{text:.0f}%",
+fig3.update_traces(
     textposition="top center",
     line_color=CVD_BLUE,
-    marker_color=CVD_BLUE)
+    marker_color=CVD_BLUE,
+)
 
-fig4.update_layout(
-    height=360, margin=dict(l=10, r=20, t=20, b=20),
-    xaxis_title="Year", yaxis_title="Top-3 share (%)")
 
-fig4.update_yaxes(range=[0, 100])
-fig4.update_xaxes(dtick=1)
+fig3.update_layout(
+    height=360,
+    margin=dict(
+        l=10,
+        r=20,
+        t=20,
+        b=20,
+    ),
+    xaxis_title="Year",
+    yaxis_title="Number of organisations",
+)
 
-if cr3_meaningful.empty:
-    st.info(
-        "No years in this selection have more than three participating organisations, "
-        "so CR3 is not shown for this range."
-    )
-else:
-    st.plotly_chart(fig4, use_container_width=True)
+
+fig3.update_xaxes(
+    dtick=1
+)
+
+
+st.plotly_chart(
+    fig3,
+    use_container_width=True,
+)
+
 
 interpretation(
-    "When more than three organisations participate, the top three still hold "
-    "a large share of frontier development."
+    "The number of organisations at the frontier changes a lot "
+    "from year to year, rather than steadily falling."
 )
+
+
 st.divider()
 
 
-# Chart 5 - Frontier composition by organisation
-st.subheader("5. Who actually makes up the frontier?")
-st.caption("Annual share of frontier AI model development by organisation.")
+# --------------------------------------------------
+# Chart 4
+# CR3 over time
+# --------------------------------------------------
 
-top_n = st.selectbox("Show leading organisations",
-                     options=[3, 5, 7, 10], index=1)
+st.subheader(
+    "4. How concentrated is frontier development when participation is broad?"
+)
+
+st.caption(
+    "CR3 is shown only for years with more than three participating "
+    "organisations. Gaps indicate years where CR3 would automatically "
+    "equal 100% because three or fewer organisations participated."
+)
+
+
+# Keep every year on the x-axis.
+# Invalid CR3 years become missing values so Plotly breaks the line.
+cr3_plot = filtered_concentration.copy()
+
+
+cr3_plot["CR3_display"] = (
+    cr3_plot["CR3_percent"]
+    .where(
+        cr3_plot["Organisation_count"] > 3
+    )
+)
+
+
+# Text labels only for valid CR3 values
+cr3_plot["CR3_label"] = (
+    cr3_plot["CR3_display"]
+    .apply(
+        lambda x:
+        f"{x:.0f}%"
+        if pd.notna(x)
+        else ""
+    )
+)
+
+
+valid_cr3 = cr3_plot[
+    cr3_plot["CR3_display"].notna()
+]
+
+
+if valid_cr3.empty:
+
+    st.info(
+        "No years in this selection have more than three "
+        "participating organisations, so CR3 is not shown."
+    )
+
+else:
+
+    fig4 = px.line(
+        cr3_plot,
+        x="Year",
+        y="CR3_display",
+        markers=True,
+        text="CR3_label",
+        labels={
+            "Year":
+                "Year",
+            "CR3_display":
+                "Top-3 share (%)",
+        },
+    )
+
+
+    fig4.update_traces(
+        connectgaps=False,
+        textposition="top center",
+        line_color=CVD_BLUE,
+        marker_color=CVD_BLUE,
+    )
+
+
+    fig4.update_layout(
+        height=360,
+        margin=dict(
+            l=10,
+            r=20,
+            t=20,
+            b=20,
+        ),
+        xaxis_title="Year",
+        yaxis_title="Top-3 share (%)",
+        showlegend=False,
+    )
+
+
+    fig4.update_yaxes(
+        range=[0, 100]
+    )
+
+
+    fig4.update_xaxes(
+        dtick=1
+    )
+
+
+    st.plotly_chart(
+        fig4,
+        use_container_width=True,
+    )
+
+
+interpretation(
+    "When more than three organisations participate, the top three "
+    "still hold a large share of frontier development."
+)
+
+
+st.divider()
+
+
+# --------------------------------------------------
+# Chart 5
+# Frontier composition by organisation
+# --------------------------------------------------
+
+st.subheader(
+    "5. Who actually makes up the frontier?"
+)
+
+st.caption(
+    "Annual share of frontier AI model development by organisation."
+)
+
+
+top_n = st.selectbox(
+    "Show leading organisations",
+    options=[
+        3,
+        5,
+        7,
+        10,
+    ],
+    index=1,
+)
+
 
 composition = frontier_year_org[
     frontier_year_org["Year"].between(
         selected_years[0],
-        selected_years[1])].copy()
+        selected_years[1],
+    )
+].copy()
 
 
-# Identify leading organisations over selected period
-leading_orgs = (
-    composition.groupby("Organisation")["Fractional_contribution"]
-    .sum().sort_values(ascending=False).head(top_n).index)
+if composition.empty:
 
-
-# Group smaller organisations into Others
-composition["Display_org"] = (composition["Organisation"].where(
-    composition["Organisation"].isin(leading_orgs), "Others"))
-
-
-# Re-aggregate shares after grouping Others
-composition_grouped = (
-    composition.groupby(["Year", "Display_org"], as_index=False)
-    .agg(Fractional_contribution=("Fractional_contribution", "sum")))
-
-
-# Complete all year-category combinations so missing years appear as zero
-years = list(range(selected_years[0], selected_years[1] + 1))
-categories = sorted(composition_grouped["Display_org"].unique())
-full_index = pd.MultiIndex.from_product([years, categories], names=["Year", "Display_org"])
-
-composition_grouped = (composition_grouped
-                       .set_index(["Year", "Display_org"])
-                       .reindex(full_index, fill_value=0)
-                       .reset_index())
-
-
-# Convert contributions to annual percentage shares
-composition_grouped["Year_total"] = (
-    composition_grouped
-    .groupby("Year")["Fractional_contribution"]
-    .transform("sum"))
-
-composition_grouped["Share_percent"] = (
-    composition_grouped["Fractional_contribution"]
-    / composition_grouped["Year_total"] * 100)
-
-composition_grouped["Share_percent"] = (composition_grouped["Share_percent"].fillna(0))
-
-
-# 100% stacked bar chart
-fig5 = px.bar(
-    composition_grouped,
-    x="Year",
-    y="Share_percent",
-    color="Display_org",
-    color_discrete_sequence=px.colors.qualitative.Safe,
-    text="Share_percent",
-    labels={
-        "Year": "Year",
-        "Share_percent": "Share of frontier development (%)",
-        "Display_org": "Organisation"
-    }
-)
-
-fig5.update_traces(
-    texttemplate="%{text:.0f}%",
-    textposition="inside"
-)
-
-fig5.update_layout(
-    height=430,
-    margin=dict(l=10, r=20, t=20, b=20),
-    xaxis_title="Year",
-    yaxis_title="Share of frontier development (%)",
-    legend_title="Organisation",
-    barmode="stack",
-)
-fig5.update_xaxes(dtick=1)
-fig5.update_yaxes(range=[0, 100])
-
-if composition_grouped.empty:
-    st.info("No organisation-composition data are available for the selected filters.")
-else:
-    st.plotly_chart(fig5, use_container_width=True)
-    st.caption(
-        "Exact percentages are printed on the stacked bars; very small zero-value segments are omitted visually."
+    st.info(
+        "No organisation-composition data are available "
+        "for the selected year range."
     )
 
-st.markdown("""
-    **Interpretation:** Frontier development is shared across several organisations, 
-    but a few leading organisations often make up most of the total. """)
+else:
+
+    # Identify leading organisations over selected period
+    leading_orgs = (
+        composition
+        .groupby(
+            "Organisation"
+        )["Fractional_contribution"]
+        .sum()
+        .sort_values(
+            ascending=False
+        )
+        .head(top_n)
+        .index
+    )
+
+
+    # Group smaller organisations into Others
+    composition["Display_org"] = (
+        composition["Organisation"]
+        .where(
+            composition["Organisation"]
+            .isin(leading_orgs),
+            "Others",
+        )
+    )
+
+
+    # Re-aggregate after grouping Others
+    composition_grouped = (
+        composition
+        .groupby(
+            [
+                "Year",
+                "Display_org",
+            ],
+            as_index=False,
+        )
+        .agg(
+            Fractional_contribution=(
+                "Fractional_contribution",
+                "sum",
+            )
+        )
+    )
+
+
+    # Complete all year-category combinations
+    years = list(
+        range(
+            selected_years[0],
+            selected_years[1] + 1,
+        )
+    )
+
+
+    categories = sorted(
+        composition_grouped[
+            "Display_org"
+        ].unique()
+    )
+
+
+    full_index = (
+        pd.MultiIndex
+        .from_product(
+            [
+                years,
+                categories,
+            ],
+            names=[
+                "Year",
+                "Display_org",
+            ],
+        )
+    )
+
+
+    composition_grouped = (
+        composition_grouped
+        .set_index(
+            [
+                "Year",
+                "Display_org",
+            ]
+        )
+        .reindex(
+            full_index,
+            fill_value=0,
+        )
+        .reset_index()
+    )
+
+
+    # Convert contribution to annual percentage
+    composition_grouped[
+        "Year_total"
+    ] = (
+        composition_grouped
+        .groupby(
+            "Year"
+        )[
+            "Fractional_contribution"
+        ]
+        .transform("sum")
+    )
+
+
+    composition_grouped[
+        "Share_percent"
+    ] = (
+        composition_grouped[
+            "Fractional_contribution"
+        ]
+        / composition_grouped[
+            "Year_total"
+        ]
+        * 100
+    )
+
+
+    composition_grouped[
+        "Share_percent"
+    ] = (
+        composition_grouped[
+            "Share_percent"
+        ]
+        .fillna(0)
+    )
+
+
+    # Hide labels for extremely small segments
+    composition_grouped[
+        "Share_label"
+    ] = (
+        composition_grouped[
+            "Share_percent"
+        ]
+        .apply(
+            lambda x:
+            f"{x:.0f}%"
+            if x >= 3
+            else ""
+        )
+    )
+
+
+    fig5 = px.bar(
+        composition_grouped,
+        x="Year",
+        y="Share_percent",
+        color="Display_org",
+        color_discrete_sequence=(
+            px.colors.qualitative.Safe
+        ),
+        text="Share_label",
+        labels={
+            "Year":
+                "Year",
+            "Share_percent":
+                "Share of frontier development (%)",
+            "Display_org":
+                "Organisation",
+        },
+    )
+
+
+    fig5.update_traces(
+        textposition="inside"
+    )
+
+
+    fig5.update_layout(
+        height=430,
+        margin=dict(
+            l=10,
+            r=20,
+            t=20,
+            b=20,
+        ),
+        xaxis_title="Year",
+        yaxis_title=(
+            "Share of frontier development (%)"
+        ),
+        legend_title="Organisation",
+        barmode="stack",
+    )
+
+
+    fig5.update_xaxes(
+        dtick=1
+    )
+
+
+    fig5.update_yaxes(
+        range=[0, 100]
+    )
+
+
+    st.plotly_chart(
+        fig5,
+        use_container_width=True,
+    )
+
+
+    st.caption(
+        "Percentages are printed on segments of 3% or more. "
+        "Smaller segments remain visible in the chart and legend."
+    )
+
+
+interpretation(
+    "The leading organisations change over time, but a few organisations "
+    "often still make up a large share of frontier development."
+)
+
+
 st.divider()
 
 
+# --------------------------------------------------
 # Overall answer
-st.subheader("What does the data suggest?")
-st.markdown("""
-    Influential AI model development remains concentrated among a small group
-    of organisations, but concentration does not increase steadily over time.
+# --------------------------------------------------
 
-    Instead:
-    - the number of frontier organisations fluctuates substantially;
-    - some years are highly concentrated because only a few
-      organisations are represented. """)
-
-
-# Methodology
-with st.expander("Data and methodology"):
-    st.markdown("""
-        #### Data sources
-        I use two data sources: the Stanford AI Index 2025 and Epoch AI Frontier Models.
-
-        #### Method
-        For **collaborative models**, each model is divided equally across its listed
-        organisations so that the total contribution of one model remains equal to one.
-
-        **Organisation names** are standardised before analysis, and concentration is measured
-        using organisation count, Top-3 share (CR3), and HHI.
-
-        #### Organisation harmonisation
-        Historical or alternative organisation names are harmonised
-        before aggregation. For example, DeepMind, Google Brain,
-        Google Research and Google DeepMind are grouped under Google.
-
-        #### Limitations
-        Notable AI models and frontier AI models are related but distinct concepts.
-        """)
-
-
-page_takeaway(
-    "Organisation concentration changes from year to year rather than steadily increasing. "
-    "However, a relatively small number of leading organisations often still account for a large share of frontier development."
+st.subheader(
+    "What does the data suggest?"
 )
 
-limitations([
-    "Stanford notable models and Epoch frontier models are related but different measures.",
-    "Model counts do not directly measure capability, market power, revenue, or research quality.",
-    "Fractional attribution gives equal credit to listed organisations and does not measure their actual contribution.",
-])
 
-page_footer("Epoch AI Frontier Models and Stanford AI Index 2025")
+st.markdown(
+    """
+    Influential AI model development remains concentrated among
+    a small group of organisations, but concentration does not
+    increase steadily over time.
+
+    Instead:
+
+    - the number of frontier organisations fluctuates substantially;
+    - some years are highly concentrated because only a few
+      organisations are represented.
+    """
+)
+
+
+# --------------------------------------------------
+# Methodology
+# --------------------------------------------------
+
+with st.expander(
+    "Data and methodology"
+):
+
+    st.markdown(
+        """
+        #### Data sources
+
+        This analysis uses two data sources:
+
+        - Stanford AI Index 2025
+        - Epoch AI Frontier Models
+
+        #### Method
+
+        For **collaborative models**, each model is divided equally
+        across its listed organisations so that the total contribution
+        of one model remains equal to one.
+
+        Organisation names are standardised before analysis.
+
+        Concentration is measured using:
+
+        - organisation count;
+        - Top-3 share (CR3);
+        - HHI.
+
+        #### Organisation harmonisation
+
+        Historical or alternative organisation names are harmonised
+        before aggregation.
+
+        For example, DeepMind, Google Brain, Google Research and
+        Google DeepMind are grouped under Google.
+
+        #### Important distinction
+
+        Stanford **notable AI models** and Epoch AI **frontier models**
+        are related but different measures and are not combined into
+        one metric.
+        """
+    )
+
+
+# --------------------------------------------------
+# Page takeaway
+# --------------------------------------------------
+
+page_takeaway(
+    """
+    Organisation concentration changes from year to year rather than
+    steadily increasing. However, a relatively small number of leading
+    organisations often still account for a large share of frontier
+    development.
+    """
+)
+
+
+# --------------------------------------------------
+# Limitations
+# --------------------------------------------------
+
+limitations(
+    [
+        (
+            "Stanford notable models and Epoch frontier models "
+            "are related but different measures."
+        ),
+        (
+            "Model counts do not directly measure capability, "
+            "market power, revenue, or research quality."
+        ),
+        (
+            "Fractional attribution gives equal credit to listed "
+            "organisations and does not measure their actual contribution."
+        ),
+    ]
+)
+
+
+# --------------------------------------------------
+# Source + refresh
+# --------------------------------------------------
+
+page_footer(
+    "Epoch AI Frontier Models and Stanford AI Index 2025"
+)
