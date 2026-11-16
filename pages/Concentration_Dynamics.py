@@ -16,23 +16,23 @@ from concentration import (credit_table, entrants_by_year,
 
 from data import RAW_DIR, load_csv
 from page_style import (
+    CVD_BLUE,
+    CVD_GREEN,
+    CVD_ORANGE,
+    CVD_GREY,
     analysis_header,
-    interpretation,
     limitations,
     page_footer,
     page_takeaway,
 )
-BLUE, ORANGE, AQUA = "#2a78d6", "#eb6834", "#1baf7a"   # validated categorical slots 1-3
+BLUE, ORANGE, AQUA = CVD_BLUE, CVD_ORANGE, CVD_GREEN
 INK, MUTED, GRID = "#0b0b0b", "#52514e", "#e6e5e1"
 
 analysis_header(
-    title="Concentration Dynamics",
-    contributor="Aarushi",
-    focus="How does organisational concentration change over time, and how sensitive is it to counting choices?",
-    description=(
-        "This page tests how conclusions about concentration change with the model set, "
-        "Top-N choice, time window, and parent-company roll-up."
-    ),
+    "Concentration Dynamics",
+    "Aarushi",
+    "How does organisational concentration change over time, and how sensitive is it to counting choices?",
+    "This page tests how concentration changes with the model set, Top-N choice, time window, and parent-company roll-up.",
 )
 
 
@@ -125,10 +125,22 @@ end_label(f2, last["year"], last["distinct_orgs"], "shipping")
 end_label(f2, last["year"], last["effective_orgs"], "effective")
 st.plotly_chart(f2, width="stretch")
 
-interpretation(
-    "A rising Top-N share suggests stronger concentration, while a rising organisation count suggests broader "
-    "participation. Both can happen at the same time, and parent-company roll-up choices can change the result."
-)
+st.markdown(
+    "**Two readings, same data.** If the top-N line rises, a few labs are taking more of the frontier. "
+    "If the organisation count rises at the same time, the field is also *broadening* at the edge. "
+    "Flip the roll-up toggle: whether Google's labs count as one organisation moves the answer.")
+
+# Exact values for charts 1 and 2, readable without hovering.
+value_table = m[["window", "top_n_share", "distinct_orgs", "effective_orgs", "models"]].copy()
+value_table["Top-N share (%)"] = (value_table.pop("top_n_share") * 100).round(1)
+value_table = value_table.rename(columns={
+    "window": "Window",
+    "distinct_orgs": "Organisations shipping",
+    "effective_orgs": "Effective organisations",
+    "models": "Models",
+})
+value_table["Effective organisations"] = value_table["Effective organisations"].round(1)
+st.dataframe(value_table, width="stretch", hide_index=True, height=240)
 
 # ---------- deeper views --------------------------------------------------
 st.divider()
@@ -157,6 +169,9 @@ with tab_stay:
     fh.update_xaxes(tickfont=dict(color=MUTED))
     st.plotly_chart(fh, width="stretch")
     st.caption("Rows are the 10 organisations with the most credit across the whole dataset.")
+    heat_table = (sm * 100).round(1)
+    heat_table.columns = [str(c) for c in heat_table.columns]
+    st.dataframe(heat_table, width="stretch", height=260)
 
 with tab_shape:
     first_tbl = credit_table(credit, int(first["year"]), window)
@@ -180,6 +195,13 @@ with tab_shape:
     st.plotly_chart(fl, width="stretch")
     st.caption("Gini: 0 = perfectly equal, 1 = one organisation made everything. "
                "Caveat: Gini ignores how many orgs there are, so read it next to chart 2.")
+    lorenz_table = pd.concat([
+        lz0.assign(Window=str(first["window"])),
+        lz1.assign(Window=str(last["window"])),
+    ], ignore_index=True)
+    lorenz_table["Organisation share (%)"] = (lorenz_table.pop("org_share") * 100).round(1)
+    lorenz_table["Model share (%)"] = (lorenz_table.pop("model_share") * 100).round(1)
+    st.dataframe(lorenz_table, width="stretch", hide_index=True, height=240)
 
 with tab_new:
     ent = entrants_by_year(credit)
@@ -188,8 +210,10 @@ with tab_new:
                 "already had one. A steady stream of newcomers argues against a closed club.")
     fe = go.Figure()
     fe.add_bar(x=ent["year"], y=ent["returning"], name="Returning", marker=dict(color=BLUE),
+               text=ent["returning"], textposition="inside",
                hovertemplate="%{y} returning orgs<extra></extra>")
     fe.add_bar(x=ent["year"], y=ent["new"], name="First model", marker=dict(color=AQUA),
+               text=ent["new"], textposition="inside",
                hovertemplate="%{y} first-time orgs<extra></extra>")
     base_layout(fe, "Organisations")
     fe.update_layout(barmode="stack", bargap=0.3)
@@ -217,6 +241,10 @@ with tab_where:
         base_layout(f, "Share of models", [0, 1], pct=True)
         st.markdown(title)
         st.plotly_chart(f, width="stretch")
+        visible = long[["year", "group", "share"]].copy()
+        visible["Share (%)"] = (visible.pop("share") * 100).round(1)
+        visible = visible.rename(columns={"year": "Year", "group": "Group"})
+        st.dataframe(visible, width="stretch", hide_index=True, height=220)
 
     if sector.empty and country.empty:
         st.info("This Epoch file has no sector or country columns.")
@@ -268,13 +296,12 @@ with st.expander("Method notes and choices that change the answer"):
 
 
 page_takeaway(
-    "Concentration depends on both the time period and the counting choices. The latest frontier can appear highly "
-    "concentrated even when the wider field is broadening."
+    "Concentration depends on both the time period and the counting choices. The latest frontier can be highly concentrated even when the wider field is broadening."
 )
 
 limitations([
     "Results change depending on whether sub-labs are rolled up to parent companies.",
-    "Short rolling windows can be noisy because frontier model releases are relatively rare.",
+    "Short rolling windows can be noisy because frontier-model releases are relatively rare.",
     "Different concentration measures capture different aspects of the same distribution.",
 ])
 
