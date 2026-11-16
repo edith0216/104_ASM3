@@ -19,11 +19,11 @@ Visual structure:
 import pandas as pd
 import streamlit as st
 import plotly.express as px
-from pathlib import Path
+from data import PROCESSED_DIR, load_csv
+from page_style import analysis_header
 
-# Project paths
-BASE_DIR = Path(__file__).resolve().parents[1]
-PROCESSED_DIR = BASE_DIR / "Data" / "processed"
+analysis_header("Organisation Concentration", "Menghan",
+                "Do a small number of organisations account for a large share of influential AI models?")
 
 STANFORD_TOTAL_FILE = (PROCESSED_DIR / "stanford_notable_2014_2024.csv")
 
@@ -36,10 +36,10 @@ FRONTIER_YEAR_ORG_FILE = (PROCESSED_DIR / "frontier_by_year_org.csv")
 # Load processed data
 @st.cache_data
 def load_data():
-    stanford_total = pd.read_csv(STANFORD_TOTAL_FILE)
-    stanford_2024 = pd.read_csv(STANFORD_2024_FILE)
-    concentration = pd.read_csv(FRONTIER_CONCENTRATION_FILE)
-    frontier_year_org = pd.read_csv(FRONTIER_YEAR_ORG_FILE)
+    stanford_total = load_csv(STANFORD_TOTAL_FILE)
+    stanford_2024 = load_csv(STANFORD_2024_FILE)
+    concentration = load_csv(FRONTIER_CONCENTRATION_FILE)
+    frontier_year_org = load_csv(FRONTIER_YEAR_ORG_FILE)
 
     return (
         stanford_total,
@@ -50,10 +50,6 @@ def load_data():
 (stanford_total, stanford_2024, concentration, frontier_year_org) = load_data()
 
 
-# Header
-st.title("Is influential AI model development concentrated in fewer organisations?")
-st.markdown("""
-    **Target Audience**: Technology policy analyst """)
 
 
 # Key metrics

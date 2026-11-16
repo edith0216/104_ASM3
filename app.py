@@ -10,7 +10,7 @@ st.title("AI Concentration Explorer")
 
 st.markdown(
     """
-    An interactive data narrative exploring where influential AI developmentis becoming concentrated.
+    An interactive data narrative exploring concentration in influential AI development.
     """)
 
 st.divider()
@@ -33,7 +33,7 @@ st.subheader("Group members")
 st.markdown(
     """
     - **Menghan** — Organisation concentration
-    - **Aarushi** — Latest frontier concentration
+    - **Aarushi** — Concentration dynamics
     - **Adarsh Kumbhar** — Academia to industry shift
     - **Akash** — Access concentration
     """)
@@ -56,27 +56,36 @@ st.markdown(
 st.divider()
 
 
-# 5. Three Analytical Lenses
+# Four Analytical Lenses
 
-st.subheader("Three ways to examine concentration")
+st.subheader("Four ways to examine concentration")
 
-col1, col2, col3 = st.columns(3)
+col1, col2, col3, col4 = st.columns(4)
 
 with col1:
     st.markdown("### 1. Organisation")
     st.write("Are a small number of organisations responsible for a large share of frontier AI model development?")
     
-    st.caption("Long-term organisation concentration and the latest frontier picture.")
+    st.caption("Primary contributor: Menghan")
+    st.page_link("pages/Organisation_Concentration.py", label="Explore organisation")
 
 with col2:
     st.markdown("### 2. Sector")
     st.write("Has notable AI model development shifted from academia towards industry?")
-    st.caption("Compares the changing roles of industry and academia.")
+    st.caption("Primary contributor: Adarsh Kumbhar")
+    st.page_link("pages/Sector_Shift.py", label="Explore sector")
 
 with col3:
     st.markdown("### 3. Access")
     st.write("Is access to influential AI models becoming more concentrated behind company APIs and hosted services?")
-    st.caption("Compares open-weight and closed forms of model access.")
+    st.caption("Primary contributor: Akash")
+    st.page_link("pages/Access_Concentration.py", label="Explore access")
+
+with col4:
+    st.markdown("### 4. Dynamics")
+    st.write("How does organisational concentration change with time and counting choices?")
+    st.caption("Primary contributor: Aarushi")
+    st.page_link("pages/Concentration_Dynamics.py", label="Explore dynamics")
 
 st.divider()
 
@@ -116,8 +125,8 @@ with col1:
         value="88%"
     )
     st.caption(
-        "Top three organisations accounted for 7 of 8 frontier models "
-        "in the latest 2025–2026 window."
+        "Top three organisations received 7 of 8 model-credit units "
+        "in the 2025–2026 window (fractional attribution, parent roll-up)."
     )
 
 with col2:
@@ -157,6 +166,8 @@ st.info(
 
     Access analysis shows **how models are made available to users**.
 
+    Concentration dynamics shows **how concentration changes across time and measurement choices**.
+
     These measures are related, but they are not the same thing.
     """
 )
@@ -184,6 +195,6 @@ st.caption(
     """
     **Sources:** Epoch AI Frontier Models, Epoch AI Notable Models,
     and Stanford AI Index 2025  
-    **Last data refresh:** November 2026
+    **Data:** Committed local snapshots in the project repository
     """
 )

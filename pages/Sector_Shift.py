@@ -2,12 +2,11 @@ import altair as alt
 import pandas as pd
 import streamlit as st
 
-st.set_page_config(page_title="Who Can Still Build Frontier AI?", layout="wide")
+from data import load_notable_data
+from page_style import analysis_header
 
-from pathlib import Path
-
-BASE_DIR = Path(__file__).resolve().parents[1]
-DATA_PATH = BASE_DIR / "Data" / "raw" / "notable_ai_models.csv"
+analysis_header("Sector Shift", "Adarsh Kumbhar",
+                "Has notable model development shifted from academia towards industry?")
 
 SECTOR_ORDER = ["Industry", "Industry–academia collaboration", "Academia", "Other"]
 SECTOR_COLOURS = ["#1f6feb", "#8250df", "#e3a008", "#9aa0a6"]
@@ -25,8 +24,8 @@ def classify(raw):
 
 
 @st.cache_data
-def load_data(path):
-    df = pd.read_csv(path)
+def load_data():
+    df = load_notable_data()
     df["Publication date"] = pd.to_datetime(df["Publication date"], errors="coerce")
     df = df.dropna(subset=["Publication date"])
     df["Year"] = df["Publication date"].dt.year
@@ -46,15 +45,9 @@ def sector_shares(df):
     return long, counts, totals
 
 
-df = load_data(DATA_PATH)
+df = load_data()
 shares, counts, totals = sector_shares(df)
 
-st.title("Who can still build frontier AI?")
-st.markdown(
-    "**Group question:** Is influential AI model development concentrated in fewer organisations?  \n"
-    "**Persona:** Technology policy analyst  \n"
-    "**This section asks:** has notable model development moved out of universities and into a single sector?"
-)
 
 ind_2014 = counts.loc[2014, "Industry"] / totals.loc[2014] * 100
 ind_2024 = counts.loc[2024, "Industry"] / totals.loc[2024] * 100

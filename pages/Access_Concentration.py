@@ -2,12 +2,11 @@ import altair as alt
 import pandas as pd
 import streamlit as st
 
-st.set_page_config(page_title="Open or behind closed doors?", layout="wide")
+from data import load_notable_data
+from page_style import analysis_header
 
-from pathlib import Path
-
-BASE_DIR = Path(__file__).resolve().parents[1]
-DATA_PATH = BASE_DIR / "Data" / "raw" / "notable_ai_models.csv"
+analysis_header("Access Concentration", "Akash",
+                "Is access to influential AI models concentrating behind company APIs?")
 
 ACCESS_ORDER = ["Open weights", "Closed (API / hosted)", "Unreleased"]
 ACCESS_COLOURS = ["#2da44e", "#d1242f", "#9aa0a6"]
@@ -26,8 +25,8 @@ def classify(raw):
 
 
 @st.cache_data
-def load_data(path):
-    df = pd.read_csv(path)
+def load_data():
+    df = load_notable_data()
     df["Publication date"] = pd.to_datetime(df["Publication date"], errors="coerce")
     df = df.dropna(subset=["Publication date"])
     df["Year"] = df["Publication date"].dt.year
@@ -47,15 +46,7 @@ def access_shares(df):
     return long, counts, totals
 
 
-df = load_data(DATA_PATH)
-
-st.title("Open, or behind closed doors?")
-st.markdown(
-    "**Group question:** Is influential AI model development concentrated in fewer organisations?  \n"
-    "**Persona:** Technology policy analyst  \n"
-    "**This section asks:** even when many organisations build models, who can actually *use* them? "
-    "Is access concentrating behind company APIs?"
-)
+df = load_data()
 
 frontier = st.toggle("Frontier models only (training compute ≥ 1e23 FLOP)", value=False)
 view = df[df["Training compute (FLOP)"] >= 1e23] if frontier else df

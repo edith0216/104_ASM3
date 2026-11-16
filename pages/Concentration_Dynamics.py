@@ -1,41 +1,36 @@
 """Is influential AI model development concentrated in fewer organisations?
 
-Satyam's page: concentration over time, Epoch AI data.
+Concentration over time, Epoch AI data.
 Drop this file into the group app's pages/ folder (with concentration.py
 beside the app root) and it runs as one page of the multipage app.
 """
-
-from datetime import datetime, timezone
-from pathlib import Path
 
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
-from concentration import (EPOCH_URLS, credit_table, entrants_by_year,
+from concentration import (credit_table, entrants_by_year,
                            explode_credit, file_fingerprint, gini, lorenz,
                            metrics_by_window, resolve_columns, share_matrix,
                            split_field_by_year)
 
-DATA_DIR = Path(__file__).parent / "data"
+from data import RAW_DIR, load_csv
+from page_style import analysis_header
 BLUE, ORANGE, AQUA = "#2a78d6", "#eb6834", "#1baf7a"   # validated categorical slots 1-3
 INK, MUTED, GRID = "#0b0b0b", "#52514e", "#e6e5e1"
 
-st.set_page_config(page_title="Concentration of AI model development", layout="wide")
+analysis_header("Concentration Dynamics", "Aarushi",
+                "How does organisational concentration change over time, and how sensitive is it to counting choices?")
 
 
 # ---------- data ----------------------------------------------------------
 @st.cache_data(show_spinner="Loading Epoch AI data")
 def load(dataset: str) -> tuple[pd.DataFrame, str, str]:
-    """Committed snapshot first (reproducible), live Epoch URL as fallback."""
-    local = DATA_DIR / f"{dataset}_ai_models.csv"
-    if local.exists():
-        ts = datetime.fromtimestamp(local.stat().st_mtime, tz=timezone.utc).date()
-        return (pd.read_csv(local),
-                f"data/{local.name} (snapshot {ts}, sha256 {file_fingerprint(local)})",
-                str(local))
-    df = pd.read_csv(EPOCH_URLS[dataset])
-    return df, f"{EPOCH_URLS[dataset]} (live, fetched {datetime.now(timezone.utc).date()})", EPOCH_URLS[dataset]
+    """Read the same committed snapshot as the other pages."""
+    local = RAW_DIR / f"{dataset}_ai_models.csv"
+    return (load_csv(local),
+            f"data/raw/{local.name} (sha256 {file_fingerprint(local)})",
+            str(local))
 
 
 def base_layout(fig: go.Figure, y_title: str, y_range=None, pct=False) -> go.Figure:
@@ -58,10 +53,6 @@ def end_label(fig, x, y, text):
 
 
 # ---------- header --------------------------------------------------------
-st.title("Is influential AI model development concentrated in fewer organisations?")
-st.caption("Persona: **a Technology Policy Analyst** advising government on AI. "
-           "They need to know whether a handful of labs now produce most influential models, "
-           "and whether that answer survives a change in how you count.")
 
 c1, c2, c3, c4 = st.columns(4)
 dataset = c1.radio("Model set", ["frontier", "notable"], horizontal=True,
