@@ -11,8 +11,7 @@ from page_style import (
     interpretation,
     limitations,
     page_footer,
-    page_takeaway,
-)
+    page_takeaway)
 
 analysis_header(
     "Access Concentration",

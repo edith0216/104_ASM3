@@ -90,9 +90,9 @@ with col4:
 st.divider()
 
 
-# Overall Answer
+# Overall
 
-st.subheader("Overall answer")
+st.subheader("Overall")
 
 st.markdown(
     """

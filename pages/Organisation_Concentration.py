@@ -31,10 +31,7 @@ from page_style import (
 )
 
 
-# --------------------------------------------------
 # Page header
-# --------------------------------------------------
-
 analysis_header(
     "Organisation Concentration",
     "Menghan",
@@ -49,10 +46,7 @@ analysis_header(
 )
 
 
-# --------------------------------------------------
 # Data paths
-# --------------------------------------------------
-
 STANFORD_TOTAL_FILE = (
     PROCESSED_DIR / "stanford_notable_2014_2024.csv"
 )
@@ -70,10 +64,7 @@ FRONTIER_YEAR_ORG_FILE = (
 )
 
 
-# --------------------------------------------------
 # Load processed data
-# --------------------------------------------------
-
 @st.cache_data
 def load_data():
 
@@ -109,10 +100,7 @@ def load_data():
 ) = load_data()
 
 
-# --------------------------------------------------
 # Key metrics
-# --------------------------------------------------
-
 latest_year = int(
     concentration["Year"].max()
 )
@@ -152,11 +140,7 @@ with col3:
 st.divider()
 
 
-# --------------------------------------------------
-# Chart 1
-# Long-term notable model leaders
-# --------------------------------------------------
-
+# Chart 1 - Long-term notable model leaders
 st.subheader(
     "1. Who dominated notable AI model development over the past decade?"
 )
@@ -226,18 +210,10 @@ interpretation(
 st.divider()
 
 
-# --------------------------------------------------
-# Chart 2
-# 2024 notable model leaders
-# --------------------------------------------------
+# Chart 2 - 2024 notable model leaders
+st.subheader("2. Is current leadership the same?")
 
-st.subheader(
-    "2. Is current leadership the same?"
-)
-
-st.caption(
-    "Number of notable AI models by organisation in 2024."
-)
+st.caption("Number of notable AI models by organisation in 2024.")
 
 
 recent = (
@@ -300,10 +276,7 @@ interpretation(
 st.divider()
 
 
-# --------------------------------------------------
 # Frontier year filter
-# --------------------------------------------------
-
 st.subheader(
     "3. Are fewer organisations participating at the frontier?"
 )
@@ -347,10 +320,7 @@ if filtered_concentration.empty:
     st.stop()
 
 
-# --------------------------------------------------
-# Chart 3
-# Organisation count over time
-# --------------------------------------------------
+# Chart 3 - Organisation count over time
 
 fig3 = px.line(
     filtered_concentration,
@@ -407,11 +377,7 @@ interpretation(
 st.divider()
 
 
-# --------------------------------------------------
-# Chart 4
-# CR3 over time
-# --------------------------------------------------
-
+# Chart 4 - CR3 over time
 st.subheader(
     "4. How concentrated is frontier development when participation is broad?"
 )
@@ -524,11 +490,7 @@ interpretation(
 st.divider()
 
 
-# --------------------------------------------------
-# Chart 5
-# Frontier composition by organisation
-# --------------------------------------------------
-
+# Chart 5 - Frontier composition by organisation
 st.subheader(
     "5. Who actually makes up the frontier?"
 )
@@ -785,13 +747,8 @@ interpretation(
 st.divider()
 
 
-# --------------------------------------------------
-# Overall answer
-# --------------------------------------------------
-
-st.subheader(
-    "What does the data suggest?"
-)
+# Summary
+st.subheader( "What does the data suggest?")
 
 
 st.markdown(
@@ -809,10 +766,7 @@ st.markdown(
 )
 
 
-# --------------------------------------------------
 # Methodology
-# --------------------------------------------------
-
 with st.expander(
     "Data and methodology"
 ):
@@ -857,10 +811,7 @@ with st.expander(
     )
 
 
-# --------------------------------------------------
 # Page takeaway
-# --------------------------------------------------
-
 page_takeaway(
     """
     Organisation concentration changes from year to year rather than
@@ -871,10 +822,7 @@ page_takeaway(
 )
 
 
-# --------------------------------------------------
 # Limitations
-# --------------------------------------------------
-
 limitations(
     [
         (
@@ -893,10 +841,5 @@ limitations(
 )
 
 
-# --------------------------------------------------
 # Source + refresh
-# --------------------------------------------------
-
-page_footer(
-    "Epoch AI Frontier Models and Stanford AI Index 2025"
-)
+page_footer("Epoch AI Frontier Models and Stanford AI Index 2025")
