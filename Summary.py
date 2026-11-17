@@ -1,4 +1,7 @@
 import streamlit as st
+import pandas as pd
+from concentration import explode_credit, metrics_by_window, resolve_columns
+from data import load_frontier_data, load_notable_data
 
 st.set_page_config(
     page_title="AI Concentration Explorer",
@@ -32,7 +35,7 @@ st.subheader("Group members")
 
 st.markdown(
     """
-    - **Menghan** — Organisation concentration
+    - **Menghan Sun** — Organisation concentration
     - **Aarushi** — Concentration dynamics
     - **Adarsh Kumbhar** — Academia to industry shift
     - **Akash** — Access concentration
@@ -49,8 +52,7 @@ st.markdown(
     **Technology Policy Analyst**
 
     This app helps a technology policy analyst understand whether influential
-    AI development is becoming concentrated across organisations, sectors,
-    and model access.
+    AI development is becoming concentrated across organisations, sectors, and model access.
     """)
 
 st.divider()
@@ -122,7 +124,7 @@ col1, col2, col3 = st.columns(3)
 with col1:
     st.metric(
         label="Latest frontier Top-3 share",
-        value="88%"
+        value="87.5%"
     )
     st.caption(
         "Top three organisations received 7 of 8 model-credit units "
@@ -132,21 +134,21 @@ with col1:
 with col2:
     st.metric(
         label="Industry-only share in 2024",
-        value="83%"
+        value="82.7%"
     )
     st.caption(
         "Industry-only notable models increased from about 15% in 2014 "
-        "to 83% in 2024."
+        "to 82.7% in 2024."
     )
 
 with col3:
     st.metric(
         label="Closed/API share in 2024",
-        value="44%"
+        value="43.9%"
     )
     st.caption(
         "Closed API or hosted access increased from 0% in 2019 "
-        "to 44% in 2024."
+        "to 43.9% in 2024."
     )
 
 st.divider()
