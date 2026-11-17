@@ -16,7 +16,6 @@ The verification must name a check that could have failed.
 -----------------------------------------------------------------------------------------------
 
 | 3 | `pages/Sector_Shift.py` | Adarsh Kumbhar | Claude | Write the Streamlit and Altair code for the sector page: classify each model as industry, academia, collaboration or other from `Organization categorization`, plot yearly shares as a 100% stacked bar, and add a training-compute scatter with an adjustable threshold | Working page code: the sector classifier, share calculation, both charts, KPI tiles and a "Trace a number" panel | Rebuilt the 2024 industry-only share by hand in Google Sheets from raw `notable_ai_models.csv`: filtered Publication date to 2024 (98 rows), then counted "Industry" (79) plus "Industry,Industry" (2) = 81, so 81/98 = 82.7%. This would have failed if the classifier mis-handled joint company models or the year filter was wrong. It matched the page metric and the trace panel exactly | Accepted. Classification rule written up in the page's "Data and method" note |
------------------------------------------------------------------------------------------------
 
 | 4 | `pages/Access_Concentration.py` | Akash | **To confirm** | **To confirm** | **To confirm** | **To confirm** | **To confirm** |
 -----------------------------------------------------------------------------------------------
