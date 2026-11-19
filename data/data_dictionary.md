@@ -7,7 +7,7 @@ The assignment requires each dataset to record its source and URL, licence, colu
 
 ## Folder layout
 ```
-Data/
+data/
 ├── raw/                                   Source
 │   ├── frontier_ai_models.csv             Epoch AI – Frontier models
 │   ├── notable_ai_models.csv              Epoch AI – Notable models
