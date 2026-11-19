@@ -37,7 +37,9 @@ Is influential AI model development concentrated in fewer organisations?
 
 ## Data
 
-All data are committed snapshots in `data/raw/` (source files) and `data/processed/` (files the app reads). See the data dictionary for sources, licences, columns, coverage and transforms.
+All data are committed snapshots in `data/raw/` (source files) and `data/processed/` (files the app reads). 
+Processed files are regenerated from `data/raw/` by running `python src/data.py`.
+See the data dictionary for sources, licences, columns, coverage and transforms.
 
 - Epoch AI, *Notable AI Models* and *Frontier AI Models* (CC BY 4.0), snapshot 25 October 2026
 - Stanford HAI, *AI Index Report 2025*, Figures 1.3.6 and 1.3.7
