@@ -139,7 +139,10 @@ st.altair_chart(lines, width="stretch")
 
 if frontier:
     interpretation(
-        "Among high-compute models, open weights remain important. This means the rise of closed access across notable models does not imply that the highest-compute frontier is entirely closed."
+        "Read this view with care. It only counts models with a published training-compute estimate, and in 2019–2024 "
+        "only 37% of closed models (33 of 90) publish one, against 70% of open-weights models (167 of 239). "
+        "Filtering by compute therefore drops mostly closed models, so this view over-represents open weights "
+        "and cannot show how open the highest-compute models really are."
     )
 else:
     interpretation(
@@ -173,7 +176,8 @@ with st.expander("Data and method"):
     )
 
 page_takeaway(
-    "Closed API and hosted access have become much more common among notable AI models. However, open-weight models remain important, including among high-compute models."
+    "Closed API and hosted access have become much more common among notable AI models, rising from 0% in 2019 to 44% in 2024. "
+    "Open-weight releases remain a substantial share, but the data cannot show whether the highest-compute models are mostly open or closed."
 )
 
 limitations([
@@ -181,6 +185,8 @@ limitations([
     "Models with missing accessibility labels are excluded.",
     "Before 2019, accessibility information is too incomplete for reliable comparison.",
     "Closed access does not by itself show that model development is concentrated among fewer organisations.",
+    "Training-compute estimates are missing far more often for closed models (37% have one) than for open-weights models (70%), "
+    "so the high-compute view is not a fair sample of the frontier.",
 ])
 
 page_footer("Epoch AI Notable Models")
