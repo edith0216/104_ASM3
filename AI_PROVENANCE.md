@@ -1,4 +1,4 @@
-**# AI Provenance Matrix
+# AI Provenance Matrix
 
 Each row records one important use of AI in the project.
 
@@ -7,16 +7,9 @@ Each group member must have at least one row.
 The verification must name a check that could have failed.
 
 | # | Artefact / section | Who | AI tool | What was asked | What AI produced | How it was checked | Outcome |
-
+|---|---|---|---|---|---|---|---|
 | 1 | `Summary.py` | Menghan | Claude & Chat GPT| Replace hard-coded 88%, 83% and 44% values with values calculated from the data | Code that calculates the three headline figures from the data package | Compared the output with manual recounts: frontier 2025–26 = 7/8 = 87.5%; industry-only 2024 = 81/98 = 82.7%; closed access 2024 = 43/98 = 43.9%. | Accepted; hard-coded values removed |
-
-
 | 2 | `concentration.py` / `pages/Concentration_Dynamics.py` | Aarushi | Claude | Write the concentration helpers (credit split, parent roll-up, Top-N share, HHI) and charts for the Concentration Dynamics page | Working helper functions and page code with model-set, Top-N, window and roll-up controls | Recounted by hand from raw `frontier_ai_models.csv`: 2025–2026 has 8 models (OpenAI 4, xAI 2, Meta AI 1, Nvidia 1), so top three = 7/8 = 87.5%. Would have failed if the year filter or credit split were wrong. Matched the page and Summary | Accepted. Third place is a tie (Meta AI and Nvidia, 1 each), so the 87.5% is the same whichever one is listed |
-
-
 | 3 | `pages/Sector_Shift.py` | Adarsh Kumbhar | Claude | Write the Streamlit and Altair code for the sector page: classify each model as industry, academia, collaboration or other from `Organization categorization`, plot yearly shares as a 100% stacked bar, and add a training-compute scatter with an adjustable threshold | Working page code: the sector classifier, share calculation, both charts, KPI tiles and a "Trace a number" panel | Rebuilt the 2024 industry-only share by hand in Google Sheets from raw `notable_ai_models.csv`: filtered Publication date to 2024 (98 rows), then counted "Industry" (79) plus "Industry,Industry" (2) = 81, so 81/98 = 82.7%. This would have failed if the classifier mis-handled joint company models or the year filter was wrong. It matched the page metric and the trace panel exactly | Accepted. Classification rule written up in the page's "Data and method" note |
-
-| 4 | `pages/Access_Concentration.py` | Akash | To confirm | To confirm | To confirm | To confirm | To confirm |
-
-
+| 4 | `pages/Access_Concentration.py` | Akash | Claude | Write the Streamlit and Altair code for the access page: group Epoch's `Model accessibility` labels into open weights, closed (API / hosted) and unreleased; plot yearly shares 2019–2024 as a 100% stacked bar with counts; add a high-compute toggle and a "Trace a number" panel. Later, check whether the high-compute view is a fair sample | Working page code (Claude wrote it), then a count of compute estimates by access type: 70% of open-weights models (167 of 239) publish one, against 37% of closed models (33 of 90) | Recounted independently of the page code, with a separate pandas count by Claude on raw `data/raw/notable_ai_models.csv` (file fingerprint checked against the repo copy): Publication date in 2024 with a non-blank `Model accessibility` = 98 rows; "API access" (30) plus "Hosted access (no API)" (13) = 43, so 43/98 = 43.9%. This would have failed if the label grouping or year filter were wrong. It matched the page and Summary. The coverage count could have shown equal coverage; it did not | Page accepted. Claim that open weights were prominent among high-compute models withdrawn; the page now warns the high-compute view over-represents open weights, and this is listed under limitations |
 | 5 | `pages/Organisation_Concentration.py` | Menghan | Chat GPT | Debugging errors, unify formatting and data processing logic | Calculate CR3 and HHI, and debug errors and chart formatting in the Plotly chart | Two recounts, either of which would fail if the pipeline or chart were wrong: (1) OpenAI = 7 in 2024 matches across the raw Stanford AI Index Figure 1.3.6.csv, stanford_notable_2024.csv and chart 2; (2) the 2024 Top-3 share recomputed by hand from raw frontier_ai_models.csv gives (OpenAI 4 + Zhipu AI 2 + Anthropic 2) / 12 models = 66.7%, matching the page metric and frontier_concentration_by_year.csv | Adopted with modifications;CR3 hidden for years with ≤ 3 organisations (where it is 100% by construction)|
