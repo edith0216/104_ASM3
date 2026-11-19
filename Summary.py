@@ -119,36 +119,78 @@ st.divider()
 # Key Findings
 st.subheader("Key findings")
 
+@st.cache_data
+def key_findings():
+    frontier = load_frontier_data()
+    notable = load_notable_data()
+
+    # Frontier Top-3 share: 2-year window, parent roll-up, fractional credit
+    cols = resolve_columns(frontier)
+    credit = explode_credit(frontier, cols, roll_up=True)
+    latest = metrics_by_window(credit, top_n=3, window=2).iloc[-1]
+
+    notable = notable.copy()
+    notable["Year"] = pd.to_datetime(notable["Publication date"], errors="coerce").dt.year
+
+    def industry_only(raw):
+        labels = {x.strip() for x in str(raw).split(",") if x.strip() and x.strip() != "nan"}
+        return labels == {"Industry"}
+
+    ind_2014 = notable.loc[notable["Year"] == 2014, "Organization categorization"].apply(industry_only)
+    ind_2024 = notable.loc[notable["Year"] == 2024, "Organization categorization"].apply(industry_only)
+
+    access = notable.loc[notable["Year"] == 2024, "Model accessibility"].astype(str)
+    labelled = access.str.startswith("Open weights") | access.isin(
+        ["API access", "Hosted access (no API)", "Unreleased"])
+    closed = access.isin(["API access", "Hosted access (no API)"])[labelled]
+
+    return {
+        "window": latest["window"],
+        "top3_share": latest["top_n_share"],
+        "top3_credit": latest["top_n_share"] * latest["models"],
+        "frontier_models": int(latest["models"]),
+        "ind_2014": ind_2014.mean(),
+        "ind_2024": ind_2024.mean(),
+        "ind_n": int(ind_2024.sum()),
+        "n_2024": len(ind_2024),
+        "closed_2024": closed.mean(),
+        "closed_n": int(closed.sum()),
+        "labelled_n": int(labelled.sum()),
+    }
+
+
+k = key_findings()
+
 col1, col2, col3 = st.columns(3)
 
 with col1:
     st.metric(
         label="Latest frontier Top-3 share",
-        value="87.5%"
+        value=f"{k['top3_share']:.1%}"
     )
     st.caption(
-        "Top three organisations received 7 of 8 model-credit units "
-        "in the 2025–2026 window (fractional attribution, parent roll-up)."
+        f"Top three organisations received {k['top3_credit']:.0f} of {k['frontier_models']} "
+        f"model-credit units in the {k['window']} window (fractional attribution, parent roll-up)."
     )
 
 with col2:
     st.metric(
         label="Industry-only share in 2024",
-        value="82.7%"
+        value=f"{k['ind_2024']:.1%}"
     )
     st.caption(
-        "Industry-only notable models increased from about 15% in 2014 "
-        "to 82.7% in 2024."
+        f"Industry-only notable models increased from {k['ind_2014']:.1%} in 2014 "
+        f"to {k['ind_2024']:.1%} in 2024 ({k['ind_n']} of {k['n_2024']} models)."
     )
 
 with col3:
     st.metric(
         label="Closed/API share in 2024",
-        value="43.9%"
+        value=f"{k['closed_2024']:.1%}"
     )
     st.caption(
-        "Closed API or hosted access increased from 0% in 2019 "
-        "to 43.9% in 2024."
+        f"Closed API or hosted access increased from 0.0% in 2019 "
+        f"to {k['closed_2024']:.1%} in 2024 ({k['closed_n']} of {k['labelled_n']} labelled models)."
     )
 
 st.divider()
