@@ -4,6 +4,8 @@
 
 Deployed app: https://104asm3-jns5mux863yavglqhfdkn5.streamlit.app/
 
+Repository: https://github.com/edith0216/104_ASM3
+
 ## Question
 
 Is influential AI model development concentrated in fewer organisations?
