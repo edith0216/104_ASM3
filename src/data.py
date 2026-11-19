@@ -26,7 +26,7 @@ The pipeline produces:
 5. stanford_notable_2014_2024.csv
 
 Presentation and visualisation logic lives in Summary.py and pages/.
-Run from the repository root: python scripts/data.py
+Run from the repository root: python scr/data.py
 """
 
 import pandas as pd
@@ -34,7 +34,7 @@ import numpy as np
 from pathlib import Path
 
 
-# 1. Project paths - Run from anywhere:  python scripts/data.py
+# 1. Project paths - Run from anywhere:  python scr/data.py
 ROOT_DIR = Path(__file__).resolve().parents[1]
 DATA_DIR = ROOT_DIR / "data"
 RAW_DIR = DATA_DIR / "raw"
